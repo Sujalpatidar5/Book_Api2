@@ -2,6 +2,7 @@ package com.cfs.BookApi2.service;
 
 import java.util.*;
 import com.cfs.BookApi2.entity.Book;
+import com.cfs.BookApi2.exception.BookNotFoundException;
 import com.cfs.BookApi2.repo.BookRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,25 +28,28 @@ public class BookService {
     }
 
     //3 Get book by id
-    public Optional<Book> getBookById (Long id) {
-        return bookRepository.findById(id);
+    public Book getBookById (Long id) {
+        return bookRepository.findById(id).orElseThrow(() ->
+                new BookNotFoundException("Book Not Found with id : " + id));
     }
 
     //4 Update book
-    public Book updateBook (Long id, Book book) {
-        if (bookRepository.existsById(id)) {
-            book.setId(id);
-            return bookRepository.save(book);
-        }
-        return null;
+    public Book updateBook (Long id, Book updatedBook) {
+        Book existingBook = bookRepository.findById(id).orElseThrow(() ->
+                new BookNotFoundException("Book not found with id : " + id));
+
+        existingBook.setTitle(updatedBook.getTitle());
+        existingBook.setAuthor(updatedBook.getAuthor());
+        existingBook.setPrice(updatedBook.getPrice());
+
+        return bookRepository.save(existingBook);
     }
 
     //5 Delete Book
-    public boolean deleteBook (Long id) {
-        if (bookRepository.existsById(id)) {
-            bookRepository.deleteById(id);
-            return true;
-        }
-        return false;
+    public void deleteBook (Long id) {
+       Book book = bookRepository.findById(id).orElseThrow(() ->
+               new BookNotFoundException("Book not found with id : " + id));
+
+       bookRepository.delete(book);
     }
 }

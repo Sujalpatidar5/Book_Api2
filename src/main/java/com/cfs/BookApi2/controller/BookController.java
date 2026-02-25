@@ -3,6 +3,7 @@ package com.cfs.BookApi2.controller;
 import java.util.*;
 import com.cfs.BookApi2.entity.Book;
 import com.cfs.BookApi2.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class BookController {
     //now add endpoints
     //1 add boook
     @PostMapping
-    public ResponseEntity<Book> addBook (@RequestBody Book book) {
+    public ResponseEntity<Book> addBook (@Valid @RequestBody Book book) {
         Book saved = bookService.addBook(book);
         return ResponseEntity.status(201).body(saved);
     }
@@ -34,33 +35,25 @@ public class BookController {
     //3 get book by id
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById (@PathVariable Long id) {
-        Optional<Book> book = bookService.getBookById(id);
+        Book book = bookService.getBookById(id);
 
-        if (book.isPresent()) {
-            return ResponseEntity.ok(book.get());
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(book);
+
     }
 
     //4 update book
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
+    public ResponseEntity<Book> updateBook(@PathVariable Long id, @Valid @RequestBody Book book) {
         Book updated = bookService.updateBook(id, book);
 
-        if (updated != null) {
-            return ResponseEntity.ok(updated);
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updated);
     }
 
     //5 delete book
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBoook (@PathVariable Long id) {
-        boolean deleted = bookService.deleteBook(id);
+        bookService.deleteBook(id);
 
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 }

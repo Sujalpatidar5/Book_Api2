@@ -1,6 +1,7 @@
 package com.cfs.BookApi2.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;       //validation - glt data ko system me jane se rokta h
 
 @Entity
 @Table(name = "books")
@@ -9,8 +10,15 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "Title cannot be empty")
     private String title;
+
+    @NotBlank(message = "Author cannot be empty")
     private String author;
+
+    @NotNull(message = "Price is required")
+    @Positive(message = "Price must be greater than 0")
     private Double price;
 
     public Book () {    //no argument / default constructor h - spring ko object banane k liye chahiye
